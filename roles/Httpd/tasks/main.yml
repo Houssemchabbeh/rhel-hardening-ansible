@@ -1,0 +1,26 @@
+---
+# tasks file for httpd
+- name: install httpd & firewalld (if it doesn't exist) packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages }}"
+- name: enable httpd & firewalld
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop: "{{ packages }}"
+- name: Permanently enable https & http service, also enable it immediately if possible
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: true
+    immediate: true
+  loop: "{{ services }}"
+- name: Template a file to /var/www/html/index.html
+  ansible.builtin.template:
+    src: template.j2
+    dest: /var/www/html/index.html
+  notify: restart httpd
+

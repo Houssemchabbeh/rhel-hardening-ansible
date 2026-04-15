@@ -1,0 +1,9 @@
+--
+# vars file for Httpd
+packages:
+  - httpd
+  - firewalld
+services:
+  - https
+  - http
+

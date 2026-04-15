@@ -1,0 +1,33 @@
+---
+- name: create users securely with specific password and configuration
+  hosts: all
+  vars_files:
+    - user_list.yml
+    - vault.yml
+  tasks:
+    - name: create opsdev group
+      ansible.builtin.group:
+        name: opsdev
+        state: present
+    - name: Add user in opsdev group
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        uid: "{{ item.uid }}"
+        groups: opsdev
+        password: "{{ pass_developer | password_hash('sha512') }}"
+      loop: "{{ users }}"
+      when: item.job == "developer" and inventory_hostname in groups.dev
+
+    - name: create opsmgr group
+      ansible.builtin.group:
+        name: opsmgr
+        state: present
+    - name: Add user in opsmgr group
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        uid: "{{ item.uid }}"
+        groups: opsmgr
+        password: "{{ pass_manager | password_hash('sha512') }}"
+        password_expire_days: "{{ item.password_expire_days }}"
+      loop: "{{ users }}"
+      when: item.job == "manager" and inventory_hostname in groups.prod

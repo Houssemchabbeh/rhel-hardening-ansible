@@ -1,0 +1,10 @@
+users:
+  - name: jack
+    uid: 3333
+    password_expire_days: 20
+    job: manager
+  - name: adam
+    uid: 3334
+    password_expire_days: 15
+    job: developer
+
